@@ -7,10 +7,9 @@ components.
 
 ## Components
 
-All components live in `src/components/ui`:
+All 63 shadcn/ui components live in `src/components/ui`:
 
-avatar, badge, button, card, checkbox, dialog, input, label, select, separator,
-switch, tabs
+accordion, alert-dialog, alert, aspect-ratio, attachment, avatar, badge, breadcrumb, bubble, button-group, button, calendar, card, carousel, chart, checkbox, code-block, collapsible, combobox, command, context-menu, dialog, direction, drawer, dropdown-menu, empty, field, hover-card, input-group, input-otp, input, item, kbd, label, marker, menubar, message-scroller, message, native-select, navigation-menu, pagination, popover, progress, questionnaire, radio-group, resizable, scroll-area, select, separator, sheet, sidebar, skeleton, slider, spinner, switch, table, tabs, textarea, toast, toggle-group, toggle, tooltip, trace
 
 Design tokens are CSS variables in `src/index.css`.
 
@@ -22,4 +21,4 @@ npm run dev     # catalog page at http://localhost:5173
 npm run build
 ```
 
-`src/App.tsx` renders every component on one catalog page.
+`src/App.tsx` renders a catalog page with a subset of the components.
