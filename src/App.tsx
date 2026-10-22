@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 
+import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 type ExampleModule = { default: React.ComponentType }
@@ -63,6 +64,7 @@ function App() {
           </Suspense>
         </main>
       </div>
+      <Toaster />
     </TooltipProvider>
   )
 }
