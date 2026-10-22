@@ -9,6 +9,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // The shadcn examples are written for Next.js.
+      'next/image': path.resolve(__dirname, './src/catalog/shims/next-image.tsx'),
+      'next/link': path.resolve(__dirname, './src/catalog/shims/next-link.tsx'),
     },
   },
 })

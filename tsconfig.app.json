@@ -17,7 +17,11 @@
     "jsx": "react-jsx",
 
     /* Path alias */
-    "paths": { "@/*": ["./src/*"] },
+    "paths": {
+      "@/*": ["./src/*"],
+      "next/image": ["./src/catalog/shims/next-image.tsx"],
+      "next/link": ["./src/catalog/shims/next-link.tsx"]
+    },
 
     /* Linting */
     "noUnusedLocals": true,

@@ -1,136 +1,69 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { lazy, Suspense, useEffect, useState } from 'react'
 
-const roles = [
-  { label: 'Designer', value: 'designer' },
-  { label: 'Engineer', value: 'engineer' },
-  { label: 'Manager', value: 'manager' },
-]
+import { TooltipProvider } from '@/components/ui/tooltip'
+
+type ExampleModule = { default: React.ComponentType }
+
+const modules = import.meta.glob<ExampleModule>('./catalog/examples/*-example.tsx')
+
+const examples = Object.entries(modules)
+  .map(([path, load]) => {
+    const name = path.replace('./catalog/examples/', '').replace('-example.tsx', '')
+    return { name, title: toTitle(name), Component: lazy(load) }
+  })
+  .sort((a, b) => a.name.localeCompare(b.name))
+
+function toTitle(name: string) {
+  return name
+    .split('-')
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+function currentName() {
+  const name = window.location.hash.slice(1)
+  return examples.some((example) => example.name === name) ? name : examples[0].name
+}
 
 function App() {
+  const [name, setName] = useState(currentName)
+
+  useEffect(() => {
+    const onHashChange = () => setName(currentName())
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  const selected = examples.find((example) => example.name === name) ?? examples[0]
+
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-8 p-8">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold">Code Layer Test DS</h1>
-        <p className="text-muted-foreground text-sm">
-          shadcn/ui components used to test Figma library code sources.
-        </p>
-      </header>
-
-      <section className="flex flex-wrap items-center gap-2">
-        <Button>Default</Button>
-        <Button variant="secondary">Secondary</Button>
-        <Button variant="outline">Outline</Button>
-        <Button variant="ghost">Ghost</Button>
-        <Button variant="destructive">Destructive</Button>
-        <Button variant="link">Link</Button>
-      </section>
-
-      <section className="flex flex-wrap items-center gap-2">
-        <Badge>Default</Badge>
-        <Badge variant="secondary">Secondary</Badge>
-        <Badge variant="outline">Outline</Badge>
-        <Badge variant="destructive">Destructive</Badge>
-        <Avatar>
-          <AvatarFallback>CK</AvatarFallback>
-        </Avatar>
-      </section>
-
-      <Separator />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Create account</CardTitle>
-          <CardDescription>Enter your details to get started.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" />
+    <TooltipProvider>
+      <div className="flex min-h-screen">
+        <nav className="sticky top-0 flex h-screen w-56 shrink-0 flex-col gap-1 overflow-y-auto border-r p-4">
+          <div className="px-2 pb-3">
+            <h1 className="text-sm font-semibold">Code Layer Test DS</h1>
+            <p className="text-muted-foreground text-xs">
+              {examples.length} shadcn/ui components
+            </p>
           </div>
-          <div className="flex flex-col gap-2">
-            <Label>Role</Label>
-            <Select items={roles}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a role" />
-              </SelectTrigger>
-              <SelectContent>
-                {roles.map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox id="terms" />
-            <Label htmlFor="terms">Accept terms</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch id="updates" />
-            <Label htmlFor="updates">Product updates</Label>
-          </div>
-        </CardContent>
-        <CardFooter className="justify-end gap-2">
-          <Button variant="outline">Cancel</Button>
-          <Button>Create</Button>
-        </CardFooter>
-      </Card>
-
-      <Tabs defaultValue="overview">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview">Overview content</TabsContent>
-        <TabsContent value="settings">Settings content</TabsContent>
-      </Tabs>
-
-      <Dialog>
-        <DialogTrigger render={<Button variant="outline" className="self-start" />}>Open dialog</DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete project</DialogTitle>
-            <DialogDescription>This action cannot be undone.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="destructive">Delete</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </main>
+          {examples.map((example) => (
+            <a
+              key={example.name}
+              href={`#${example.name}`}
+              aria-current={example.name === selected.name ? 'page' : undefined}
+              className="text-muted-foreground hover:bg-muted hover:text-foreground aria-[current=page]:bg-muted aria-[current=page]:text-foreground rounded-md px-2 py-1 text-sm"
+            >
+              {example.title}
+            </a>
+          ))}
+        </nav>
+        <main className="min-w-0 flex-1">
+          <Suspense fallback={<p className="text-muted-foreground p-8 text-sm">Loading…</p>}>
+            <selected.Component key={selected.name} />
+          </Suspense>
+        </main>
+      </div>
+    </TooltipProvider>
   )
 }
 

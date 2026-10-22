@@ -21,4 +21,9 @@ npm run dev     # catalog page at http://localhost:5173
 npm run build
 ```
 
-`src/App.tsx` renders a catalog page with a subset of the components.
+`src/App.tsx` is a catalog with one page per component (`#button`, `#sidebar`, …).
+The pages come from the official shadcn/ui examples in `src/catalog/examples`.
+Three of them (message, message-scroller, trace) are static rewrites because the
+upstream versions depend on AI SDK helpers that only exist on the shadcn site,
+and direction has no upstream example. `src/catalog/shims` stands in for
+`next/image` and `next/link`.
